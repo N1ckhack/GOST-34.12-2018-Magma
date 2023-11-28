@@ -34,9 +34,9 @@ def roundKey(key):
         keys.append(key[i * 32 : i * 32 + 32])
     return keys
 
-#TODO! Функция, выполняющая 32 раунда шифрования (опционально дешифрования, если сменим flag на reverse)
-def TransformChain(numLeft, numRight, key, flag = 'straight'):
-    if flag == 'reverse':
+#TODO! Функция, выполняющая 32 раунда шифрования (опционально дешифрования, если сменим ensign на reverse)
+def TransformChain(numLeft, numRight, key, ensign = 'straight'):
+    if ensign == 'reverse':
         start = 31
         stop = 0
         step = -1
@@ -109,7 +109,6 @@ def overwriteMode(bitNumberIn):
         # Выполняется операция XOR над num1 и num2, и результат добавляется к строке bitNumberInOut.
     return bitNumberInOut
 
-
 # TODO! Расширение ключа
 def transformKey(key) -> str:
     key = binascii.hexlify(key.encode('utf8')).decode('utf8')
@@ -154,7 +153,7 @@ def decrypt(text, key):
         textForAppend = zeros_after_number(textForAppend, 64)
         textArray.append(textForAppend)
     for i in range(len(textArray)):
-        textDecrypt += TransformChain(textArray[i][:32], textArray[i][32:], key, flag = 'reverse')
+        textDecrypt += TransformChain(textArray[i][:32], textArray[i][32:], key, ensign = 'reverse')
     textDecrypt = hex(int(textDecrypt, 2))[2:]
     return textDecrypt
 
