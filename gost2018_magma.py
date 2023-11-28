@@ -138,32 +138,22 @@ def transformKey(key) -> str:
 
 
 # TODO! Функция ШИФРОВАНИЯ
-# def encrypt(text, key):
-#     key = transformKey(key)
-#     key = cutKey(key)
-#     text = convertBase(utf8ToHex(text), toBase = 2, fromBase = 16)
-#     if len(text) % 8 != 0: # проверяется длина входного текста, если не кратна 8, то дополняется пустыми символами
-#         text = zeros_before_number(text, (len(text) // 8)  * 8 + 8)
-#     textArray = [] #список который будет использоваться для хранения блоков текста, предназначенных для шифрования.
-#     textEncrypt = ''
-#     for i in range(len(text) // 64 + 1): #Цикл разбивает входной текст на блоки по 64 бита (8 байт)
-#         textForAppend = text[i * 64 : i * 64 + 64]
-#         textForAppend = zeros_after_number(textForAppend, 64)
-#         textArray.append(textForAppend)
-#     for i in range(len(textArray)):
-#         textEncrypt += TransformChain(textArray[i][:32], textArray[i][32:], key)
-#     textEncrypt = convertBase(textEncrypt, toBase = 16, fromBase = 2)
-#     return textEncrypt
-
 def encrypt(text, key):
-    key = cutKey(transformKey(key))
-    text = zeros_before_number(convertBase(utf8ToHex(text), toBase=2, fromBase=16), ((len(text) // 8) + 1) * 8)
-
-    textArray = [zeros_after_number(text[i * 64: i * 64 + 64], 64) for i in range(len(text) // 64 + 1)]
-
-    textEncrypt = ''.join(TransformChain(block[:32], block[32:], key) for block in textArray)
-
-    return convertBase(textEncrypt, toBase=16, fromBase=2)
+    key = transformKey(key)
+    key = cutKey(key)
+    text = convertBase(utf8ToHex(text), toBase = 2, fromBase = 16)
+    if len(text) % 8 != 0: # проверяется длина входного текста, если не кратна 8, то дополняется пустыми символами
+        text = zeros_before_number(text, (len(text) // 8)  * 8 + 8)
+    textArray = [] #список который будет использоваться для хранения блоков текста, предназначенных для шифрования.
+    textEncrypt = ''
+    for i in range(len(text) // 64 + 1): #Цикл разбивает входной текст на блоки по 64 бита (8 байт)
+        textForAppend = text[i * 64 : i * 64 + 64]
+        textForAppend = zeros_after_number(textForAppend, 64)
+        textArray.append(textForAppend)
+    for i in range(len(textArray)):
+        textEncrypt += TransformChain(textArray[i][:32], textArray[i][32:], key)
+    textEncrypt = convertBase(textEncrypt, toBase = 16, fromBase = 2)
+    return textEncrypt
 
 # TODO! Функция ДЕШИФРОВАНИЯ
 def decrypt(text, key):
