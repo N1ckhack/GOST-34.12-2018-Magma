@@ -22,8 +22,8 @@ def transformation(numLeft, numRight, key):
     return numLeftOut, numRightOut
 
 # TODO! Генерация раундовых подключей
-def cutKey(key):
-    key = convertBase(key, 2, 16) #перевод ключа в двоичную форму
+def roundKey(key):
+    key = bin(int(key, 16))[2:] #перевод ключа в двоичную форму
     keys = []
     for i in range(3): #Два вложенных цикла используются для добавления первых
                     # 24 (3 * 8) подключей. Каждое подключение представляет собой
@@ -110,24 +110,6 @@ def overwriteMode(bitNumberIn):
     return bitNumberInOut
 
 
-# TODO! преобразует число из одной системы счисления в другую, возвращая его представление
-#   в виде строки в новой системе счисления
-def convertBase(num, toBase = 10, fromBase = 10) -> str | int:
-    # конвертация в десятичное число входной строки
-    if isinstance(num, str):
-        n = int(num, fromBase) # проверяем
-    else:
-        n = int(num)
-
-    # преобразование десятичного числа в требуемую систему счисления
-    if n < toBase:
-        return alphabet[n]
-    else:
-        return convertBase(n // toBase, toBase) + alphabet[n % toBase]
-    # к результату добавляется цифра, соответствующая остатку от деления на toBase. Рекурсивный вызов продолжается до
-    # тех пор, пока n не станет меньше toBase, и цифры начнут добавляться в обратном порядке.
-    # Результат возвращается как строка
-
 # TODO! Расширение ключа
 def transformKey(key) -> str:
     key = binascii.hexlify(key.encode('utf8')).decode('utf8')
@@ -136,12 +118,11 @@ def transformKey(key) -> str:
         key += key
     return key[:64]
 
-
 # TODO! Функция ШИФРОВАНИЯ
 def encrypt(text, key):
     key = transformKey(key)
-    key = cutKey(key)
-    text = convertBase(utf8ToHex(text), toBase = 2, fromBase = 16)
+    key = roundKey(key)
+    text = bin(int(utf8ToHex(text), 16))[2:]
     if len(text) % 8 != 0: # проверяется длина входного текста, если не кратна 8, то дополняется пустыми символами
         text = zeros_before_number(text, (len(text) // 8)  * 8 + 8)
     textArray = [] #список который будет использоваться для хранения блоков текста, предназначенных для шифрования.
@@ -152,14 +133,14 @@ def encrypt(text, key):
         textArray.append(textForAppend)
     for i in range(len(textArray)):
         textEncrypt += TransformChain(textArray[i][:32], textArray[i][32:], key)
-    textEncrypt = convertBase(textEncrypt, toBase = 16, fromBase = 2)
+    textEncrypt = hex(int(textEncrypt, 2))[2:]
     return textEncrypt
 
 # TODO! Функция ДЕШИФРОВАНИЯ
 def decrypt(text, key):
     key = transformKey(key)
-    key = cutKey(key)
-    text = convertBase(text, toBase = 2, fromBase = 16)
+    key = roundKey(key)
+    text = bin(int(text, 16))[2:]
     if len(text) % 8 != 0:
         text = zeros_before_number(text, (len(text) // 8)  * 8 + 8)
     textArray = []
@@ -174,6 +155,6 @@ def decrypt(text, key):
         textArray.append(textForAppend)
     for i in range(len(textArray)):
         textDecrypt += TransformChain(textArray[i][:32], textArray[i][32:], key, flag = 'reverse')
-    textDecrypt = convertBase(textDecrypt, toBase = 16, fromBase = 2)
+    textDecrypt = hex(int(textDecrypt, 2))[2:]
     return textDecrypt
 
